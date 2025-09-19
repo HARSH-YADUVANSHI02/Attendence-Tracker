@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; // CHANGED
+// MODIFIED: Import signOut for the new button
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // --- Firebase Configuration ---
@@ -23,13 +24,16 @@ const loadingSpinner = document.getElementById('loading-spinner');
 const appContent = document.getElementById('app-content');
 const subjectsGrid = document.getElementById('subjects-grid');
 const targetInput = document.getElementById('target-percentage');
-const authStatusDiv = document.getElementById('auth-status');
 const userIdDisplay = document.getElementById('user-id-display');
 const modal = document.getElementById('history-modal');
 const modalTitle = document.getElementById('modal-title');
 const modalBody = document.getElementById('modal-body');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const closeModalFooterBtn = document.getElementById('close-modal-btn-footer');
+// NEW: Get the new elements
+const signOutBtn = document.getElementById('sign-out-btn');
+const userEmailDisplay = document.getElementById('user-email');
+
 
 let userId = null;
 let userDataUnsubscribe = null;
@@ -45,47 +49,34 @@ const SUBJECT_DATA = {
     'PC': { name: 'Programming in C', total: 45 },
 };
 
-// --- Authentication ---
+// --- Authentication Guard ---
+// MODIFIED: This now checks for a logged-in user and redirects if they are not.
 onAuthStateChanged(auth, async (user) => {
     if (user) {
+        // User is signed in, show the app content
         userId = user.uid;
-        authStatusDiv.textContent = `Status: Authenticated`;
-        userIdDisplay.textContent = userId;
+        userEmailDisplay.textContent = user.email; // Display user's email
+        userIdDisplay.textContent = user.uid;
         await setupUserListener();
     } else {
-        authStatusDiv.textContent = 'Status: Not Authenticated';
-        userId = null;
-        if (userDataUnsubscribe) userDataUnsubscribe();
+        // No user is signed in, redirect to the login page
+        window.location.href = 'login.html';
     }
 });
 
-async function authenticateUser() {
-    try {
-        await setPersistence(auth, browserLocalPersistence); // CHANGED
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-            await signInAnonymously(auth);
-        }
-    } catch (error) {
-        console.error("Authentication failed:", error);
-        authStatusDiv.innerHTML = `<span class="text-red-500">Authentication Failed</span>`;
-    }
-}
 
 // --- Firestore ---
+// (The setupUserListener, initializeUserData, and all other functions below this remain the same)
 async function setupUserListener() {
     if (!userId) return;
 
     const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/attendance`, 'data');
 
-    // Check if user document exists, if not, initialize it
     const docSnap = await getDoc(userDocRef);
     if (!docSnap.exists()) {
         await initializeUserData(userDocRef);
     }
 
-    // Attach a real-time listener
     userDataUnsubscribe = onSnapshot(userDocRef, (doc) => {
         if (doc.exists()) {
             const data = doc.data();
@@ -119,7 +110,7 @@ async function initializeUserData(docRef) {
 // --- UI Rendering ---
 function renderApp(data) {
     targetInput.value = data.targetPercentage || 75;
-    subjectsGrid.innerHTML = ''; // Clear existing cards
+    subjectsGrid.innerHTML = ''; 
 
     const subjectOrder = Object.keys(SUBJECT_DATA);
 
@@ -127,7 +118,6 @@ function renderApp(data) {
         const subjectInfo = SUBJECT_DATA[code];
         const subjectData = data.subjects[code] || { history: [] };
         
-        // Calculations
         const history = subjectData.history || [];
         const attended = history.filter(h => h.status === 'present').length;
         const totalMarked = history.length;
@@ -143,7 +133,6 @@ function renderApp(data) {
             <div>
                 <h4 class="text-md font-bold text-gray-800 truncate">${subjectInfo.name}</h4>
                 <p class="text-sm text-gray-500 mb-4">Total Lectures: ${subjectInfo.total}</p>
-                
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-sm font-medium text-gray-600">Attendance</span>
                     <span class="text-sm font-bold">${attended} / ${totalMarked} (${currentPercentage}%)</span>
@@ -151,12 +140,10 @@ function renderApp(data) {
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                     <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${currentPercentage}%"></div>
                 </div>
-
                 <div class="bg-blue-50 border border-blue-200 text-blue-800 text-sm font-medium p-3 rounded-lg text-center">
                     ${analysis.message}
                 </div>
             </div>
-
             <div class="mt-4 pt-4 border-t border-gray-200 flex flex-col space-y-2">
                 <div class="flex space-x-2">
                     <button data-action="present" data-code="${code}" class="w-full text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition disabled:opacity-50" ${remainingLectures <= 0 ? 'disabled' : ''}>Mark Present</button>
@@ -201,7 +188,6 @@ async function handleAttendanceAction(code, status) {
 
         const subjectInfo = SUBJECT_DATA[code];
         if(subjectHistory.length >= subjectInfo.total) {
-            // This is a safeguard, button should be disabled anyway
             console.warn("All lectures already marked for this subject.");
             return;
         }
@@ -275,7 +261,6 @@ subjectsGrid.addEventListener('click', (e) => {
     }
 });
 
-// Use 'input' for real-time updates, 'change' for when focus is lost
 targetInput.addEventListener('change', handleTargetUpdate);
 
 closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
@@ -286,7 +271,9 @@ modal.addEventListener('click', (e) => {
     }
 });
 
-// --- Initial Load ---
-document.addEventListener('DOMContentLoaded', () => {
-    authenticateUser();
+// NEW: Add event listener for the sign out button
+signOutBtn.addEventListener('click', () => {
+    signOut(auth).catch((error) => {
+        console.error('Sign out error', error);
+    });
 });
