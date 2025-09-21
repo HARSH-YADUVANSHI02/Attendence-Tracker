@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ... The rest of your app's JavaScript code goes here ...
 });
 
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
