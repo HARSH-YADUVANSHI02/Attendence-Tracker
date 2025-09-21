@@ -36,8 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ... The rest of your app's JavaScript code goes here ...
 });
 
-const db = getFirestore(app);
-const auth = getAuth(app);
 
 // --- DOM Elements ---
 const loadingSpinner = document.getElementById('loading-spinner');
