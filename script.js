@@ -2,16 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// --- Firebase Configuration ---
-const firebaseConfig = {
-    apiKey: "AIzaSyDQWhTpjDnzRHUrhKcgVq2Ueih5IGiQkW4",
-    authDomain: "iilm-attendance-tracke.firebaseapp.com",
-    projectId: "iilm-attendance-tracke",
-    storageBucket: "iilm-attendance-tracke.appspot.com",
-    messagingSenderId: "1076382702822",
-    appId: "1:1076382702822:web:26fbd843f7768cd2adef27",
-    measurementId: "G-79L33P2FPJ"
-};
+
 document.addEventListener('DOMContentLoaded', () => {
     // This code runs after the entire HTML page is loaded and ready.
 
