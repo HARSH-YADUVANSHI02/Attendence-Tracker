@@ -12,13 +12,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-100 text-gray-800 antialiased">
+    <!-- Paste this right after your opening <body> tag -->
+<div id="disclaimer-banner" class="hidden fixed top-0 left-0 right-0 z-50 bg-yellow-400 text-yellow-900 p-3 text-center text-sm font-medium shadow-md">
+    <span>
+        <strong>Disclaimer:</strong> This is a student-made project and not an official university website.
+    </span>
+    <button id="dismiss-banner-btn" class="ml-4 font-bold text-lg leading-none" aria-label="Dismiss">&times;</button>
+</div>
     <div id="app-container" class="min-h-screen flex flex-col">
         
         <header class="bg-white shadow-md sticky top-0 z-20">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center space-x-4">
-                        <img src="https://iilm.ac.in/images/IILM-University-Logo.png" alt="IILM University Logo" class="h-10 w-auto" onerror="this.onerror=null; this.src='https://placehold.co/150x50/003366/FFFFFF?text=IILM+University';">
+                      
                         <h1 class="text-xl md:text-2xl font-bold text-gray-800 hidden sm:block">Attendance Tracker</h1>
                     </div>
                    <div id="auth-status" class="flex items-center space-x-4 text-xs text-gray-500">
