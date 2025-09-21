@@ -12,6 +12,30 @@ const firebaseConfig = {
     appId: "1:1076382702822:web:26fbd843f7768cd2adef27",
     measurementId: "G-79L33P2FPJ"
 };
+document.addEventListener('DOMContentLoaded', () => {
+    // This code runs after the entire HTML page is loaded and ready.
+
+    const disclaimerBanner = document.getElementById('disclaimer-banner');
+    const dismissBannerBtn = document.getElementById('dismiss-banner-btn');
+
+    // Make sure the banner element actually exists before trying to use it
+    if (disclaimerBanner && dismissBannerBtn) {
+        
+        // Show the banner only if it hasn't been dismissed before
+        if (localStorage.getItem('disclaimerDismissed') !== 'true') {
+            disclaimerBanner.classList.remove('hidden');
+        }
+
+        // Add functionality to the close button
+        dismissBannerBtn.addEventListener('click', () => {
+            disclaimerBanner.classList.add('hidden');
+            // Remember the user's choice so it doesn't show again
+            localStorage.setItem('disclaimerDismissed', 'true');
+        });
+    }
+
+    // ... The rest of your app's JavaScript code goes here ...
+});
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
