@@ -1,3 +1,13 @@
+// At the very top of script.js
+
+import { firebaseConfig } from './config.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"; // Or your existing import
+// ... your other imports ...
+
+// Initialize Firebase (this part should already exist)
+const app = initializeApp(firebaseConfig);
+// ... rest of the code ...
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
