@@ -1,17 +1,15 @@
-// At the very top of script.js
-
+// CORRECTED: All imports are now in one place with no duplicates.
 import { firebaseConfig } from './config.js';
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"; // Or your existing import
-// ... your other imports ...
-
-// Initialize Firebase (this part should already exist)
-const app = initializeApp(firebaseConfig);
-// ... rest of the code ...
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+// Initialize Firebase (this part is correct)
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ... the rest of your code (document.addEventListener, etc.)
 
 document.addEventListener('DOMContentLoaded', () => {
     // This code runs after the entire HTML page is loaded and ready.
